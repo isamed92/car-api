@@ -4,14 +4,22 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
+  // ParseIntPipe,
+  // UsePipes,
+  // ValidationPipe,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
+import { CreateCarDto } from './dto/create-car.dto';
+import { UpdateCarDto } from './dto/update-car.dto';
 
 @Controller('cars')
+// @UsePipes(new ValidationPipe({
+//     whitelist: true,
+    // forbidNonWhitelisted: true
+// }))
 export class CarsController {
   constructor(private readonly carsService: CarsService) {}
   
@@ -28,20 +36,17 @@ export class CarsController {
   }
 
   @Post()
-  createCar(@Body() body: any) {
-    return body;
+  createCar(@Body() createCarDto: CreateCarDto) {
+    return this.carsService.create(createCarDto);
   }
 
   @Patch(':id')
-  updateCar(@Body() body: any, @Param('id', ParseIntPipe) id: number) {
-    return body;
+  updateCar(@Body() updateCarDto: UpdateCarDto, @Param('id', ParseUUIDPipe) id: string) {
+    return this.carsService.update(updateCarDto, id);
   }
 
   @Delete(':id')
-  deleteCar(@Param('id', ParseIntPipe) id: number) {
-    return {
-      method: 'DELETE',
-      message: `Car ${id} has been deleted`,
-    };
+  deleteCar(@Param('id', ParseUUIDPipe) id: string) {
+    return this.carsService.delete(id);
   }
 }
